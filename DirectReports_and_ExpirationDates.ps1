@@ -2,7 +2,7 @@
 Import-Module ActiveDirectory
 
 # Specify the username of the manager whose direct reports you want to retrieve
-$managerUsername = "PKincade"
+$managerUsername = "ManagerUsername"
 
 # Get the user object for the manager
 $manager = Get-ADUser -Identity $managerUsername -Properties DirectReports, AccountExpirationDate
@@ -29,7 +29,7 @@ if ($manager.DirectReports) {
     }
 
     # Export the results to a CSV file
-    $results | Export-Csv -Path "c:\temp\7DirectReportsInfo.csv" -NoTypeInformation
+    $results | Export-Csv -Path "DirectReportsInfo.csv" -NoTypeInformation
     Write-Host "Direct reports information exported to DirectReportsInfo.csv."
 } else {
     Write-Host "The manager has no direct reports."
