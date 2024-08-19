@@ -1,0 +1,38 @@
+# Define the output CSV file
+$outputCsv = "C:\temp\WindowsServersReport.csv"
+
+# Initialize an array to store server information
+$serverInfoList = @()
+
+# Get all Windows servers in the domain
+$servers = Get-ADComputer -Filter {OperatingSystem -Like '*Windows*Server*'} -Property Name, OperatingSystem, IPv4Address
+
+foreach ($server in $servers) {
+    $serverName = $server.Name
+    $osVersion = $server.OperatingSystem
+    $ipAddress = $server.IPv4Address
+
+    # Check if the server is pingable
+    $pingResult = Test-Connection -ComputerName $serverName -Count 1 -Quiet
+
+    # If the server is not pingable, mark it as such
+    if (-not $pingResult) {
+        $status = "Not Pingable"
+        $ipAddress = "N/A"
+    } else {
+        $status = "Pingable"
+    }
+
+    # Add the server information to the array
+    $serverInfoList += [PSCustomObject]@{
+        ServerName   = $serverName
+        OSVersion    = $osVersion
+        IPAddress    = $ipAddress
+        Status       = $status
+    }
+}
+
+# Export the server information to a CSV file
+$serverInfoList | Export-Csv -Path $outputCsv -NoTypeInformation
+
+Write-Host "Server information has been exported to $outputCsv"
